@@ -14,7 +14,7 @@ const { getCategorias } = require('./categoriaController')
 async function getObjetoMovimentacao(obj) {
     try {
         const categoria = await getCategoriaById(obj.categoria.toString())
-        return new Movimentacao(obj.descricao, obj.valor, obj.tipo, categoria, obj._id, obj.email)
+        return new Movimentacao(obj.descricao, obj.valor, obj.tipo, categoria, obj._id, obj.email, obj.data)
     } catch (e) {
         return {}
     }
@@ -33,10 +33,18 @@ async function getMovimentacoes(email = "") {
         const movimentacoes = await modelMovimentacao.find({email: email}).sort({data: 'desc'}).populate()
 
         if (movimentacoes.length) {
-            const movimentacoesAux = movimentacoes.map((obj) => new Movimentacao(obj.descricao, obj.valor, obj.tipo, getCategoria(obj.categoria.toString(), categorias), obj._id, email))
-            totalCredito = movimentacoesAux.filter(obj => obj.tipo == "CREDITO").map(obj => obj.valor).reduce((valor, total) => total += valor)
-            totalDebito = movimentacoesAux.filter(obj => obj.tipo != "CREDITO").map(obj => obj.valor).reduce((valor, total) => total += valor)
-            result.saldoTotal = (totalCredito - totalDebito)
+            const movimentacoesAux = movimentacoes.map((obj) => new Movimentacao(obj.descricao, obj.valor, obj.tipo, getCategoria(obj.categoria.toString(), categorias), obj._id, email, obj.data))
+            const creditos = movimentacoesAux.filter(obj => obj.tipo == "CREDITO").map(obj => obj.valor)
+            const debitos = movimentacoesAux.filter(obj => obj.tipo != "CREDITO").map(obj => obj.valor)
+            
+            if (creditos.length) {
+                totalCredito = creditos.reduce((total, valor) => total += valor)
+            }  
+            if (debitos.length) {
+                totalDebito = debitos.reduce((valor, total) => total += valor)
+            }
+
+            result.saldoTotal = totalCredito - totalDebito
             result.movimentacoes = movimentacoesAux
         }
     } catch (e) {
@@ -128,7 +136,10 @@ async function exclui(req, res) {
 
 async function atualiza(req, res) {
     try {
-        const movimentacaAtualizada = await modelMovimentacao.findOneAndUpdate({_id: req.params.id, email: req.headers.authorization}, req.body, {
+        const movimentacaAtualizada = await modelMovimentacao.findOneAndUpdate({
+            _id: req.params.id, 
+            email: req.headers.authorization
+        }, req.body, {
             new: true
         }).lean()
         

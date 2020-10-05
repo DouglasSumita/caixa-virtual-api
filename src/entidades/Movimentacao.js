@@ -1,11 +1,12 @@
 class Movimentacao {
-    constructor(descricao, valor, tipo, categoria, id, email) {
+    constructor(descricao, valor, tipo, categoria, id, email, data) {
         this.descricao = descricao
         this.valor = valor
         this.categoria = categoria
         this.tipo = tipo.toUpperCase()
         this.id = id
         this.email = email
+        this.data = data
     }
 
     getId() {
@@ -43,6 +44,12 @@ class Movimentacao {
     }
     setEmail(email) {
         this.email = email
+    }
+    getData() {
+        return this.data
+    }
+    setData(data) {
+        this.data = data
     }
 }
 
