@@ -36,7 +36,7 @@ async function getMovimentacoes(email = "") {
             const movimentacoesAux = movimentacoes.map((obj) => new Movimentacao(obj.descricao, obj.valor, obj.tipo, getCategoria(obj.categoria.toString(), categorias), obj._id, email))
             totalCredito = movimentacoesAux.filter(obj => obj.tipo == "CREDITO").map(obj => obj.valor).reduce((valor, total) => total += valor)
             totalDebito = movimentacoesAux.filter(obj => obj.tipo != "CREDITO").map(obj => obj.valor).reduce((valor, total) => total += valor)
-            result.saldoTotal = (totalCredito - totalDebito).toFixed(2)
+            result.saldoTotal = (totalCredito - totalDebito)
             result.movimentacoes = movimentacoesAux
         }
     } catch (e) {
