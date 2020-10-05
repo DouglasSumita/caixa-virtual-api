@@ -1,0 +1,33 @@
+{
+  "name": "caixa-virtual-api",
+  "version": "1.0.0",
+  "description": "Caixa Virtual API",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DouglasSumita/caixa-virtual-api.git"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "api"
+  ],
+  "author": "Douglas Sumita",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DouglasSumita/caixa-virtual-api/issues"
+  },
+  "homepage": "https://github.com/DouglasSumita/caixa-virtual-api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
