@@ -3,7 +3,8 @@ const dataBaseName = 'caixa-virtual'
 const URI = 'mongodb://localhost/' + dataBaseName
 const settings = {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
 }
 
 async function connect() {

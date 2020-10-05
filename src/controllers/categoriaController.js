@@ -1,10 +1,49 @@
 const mongoose = require('mongoose')
+const Categoria = require('../entidades/Categoria')
 require('../models/categoria')
 const modelCategoria = mongoose.model('Categoria')
+require('../entidades/Categoria')
+const { stringPreenchida } = require('../util/strings')
+
+async function getCategoriaById(id) {
+    try {
+        const categorias = await getCategorias()
+        return getCategoria(id, categorias)
+    } catch (e) {
+        console.log(e)
+    }
+    return null
+}
+
+function getCategoria(id, categorias) {
+    const categoriaEncontrada = categorias.filter(obj => obj.id == id)
+    if (categoriaEncontrada.length) {
+        return categoriaEncontrada[0]
+    }
+    return null
+}
+
+async function getCategorias() {
+    try {
+        const categorias = await modelCategoria.find().sort({name: 'asc'}).populate()
+        return categorias.map(obj => new Categoria(obj.name, obj._id))
+    } catch (e) {
+        return []
+    }
+}
 
 async function novo(req, res) {
+    let novaCategoria = new Categoria(req.body.name)
+    const listaCategoriaExistente = await modelCategoria.find({name: novaCategoria.getName()})
+    
+    if (!stringPreenchida(novaCategoria.getName())) {
+        return res.status(400).send("Categoria com nome inválido!") 
+    } else if (listaCategoriaExistente.length) {
+        return res.status(400).send("Categoria já existe, Id: " + listaCategoriaExistente[0]._id) 
+    } 
+    
     try {
-        const novaCategoria = await modelCategoria(req.body).save()
+        novaCategoria = await modelCategoria(novaCategoria).save()
         return res.status(201).send(novaCategoria)
     } catch(e) {
         return res.status(400).send(e)
@@ -13,7 +52,7 @@ async function novo(req, res) {
 
 async function listagem(req, res) {
     try {
-        const categorias = await modelCategoria.find().sort({name: 'asc'}).populate()
+        const categorias = await getCategorias()
         return res.status(200).send(categorias)
     } catch(e) {
         return res.status(400).send(e)
@@ -22,8 +61,7 @@ async function listagem(req, res) {
 
 async function listagemById(req, res) {
     try {
-        const categoria = await modelCategoria.findById(req.params.id).populate()
-        return res.status(200).send(categorias)
+        return res.status(200).send(await getCategoriaById(req.params.id))
     } catch(e) {
         return res.status(400).send(e)
     }
@@ -31,17 +69,24 @@ async function listagemById(req, res) {
 
 async function exclui(req, res) {
     try {
+        const categoria = await modelCategoria.findById(req.params.id).populate()
+        if (!categoria) {
+            return res.status(400).send("Id: '" + req.params.id + "' da Categoria não existe!") 
+        }
+    
         await modelCategoria.findByIdAndDelete(req.params.id).lean()
-        res.status(204).send()
+        res.status(200).send("Categoria deletada com sucesso!")
     } catch(error) {
         res.status(400).send(error)
     }
 }
 
 async function atualiza(req, res) {
+    const categoria = new Categoria(req.body.name, req.params.id)
+
     try {
-        const categoriaAtualizada = await modelCategoria.findByIdAndUpdate(req.params.id, req.body, {new: true}).lean()
-        res.status(204).send(categoriaAtualizada)
+        const categoriaAtualizada = await modelCategoria.findByIdAndUpdate(categoria.getId(), categoria, {new: true}).populate()
+        res.status(200).send(new Categoria(categoriaAtualizada.name, categoriaAtualizada._id))
     } catch(error) {
         res.status(400).send(error)
     }
@@ -52,5 +97,8 @@ module.exports = {
     listagem,
     listagemById,
     exclui,
-    atualiza
+    atualiza,
+    getCategorias,
+    getCategoria,
+    getCategoriaById
 }

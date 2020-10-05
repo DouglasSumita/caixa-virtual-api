@@ -3,10 +3,10 @@ const app = express()
 const bodyParser = require('body-parser')
 const categoria = require('./routes/categoria')
 const movimentacao = require('./routes/movimentacao')
-const dataBase = require('./controllers/bancoDadosController')
+const bancoDados = require('./controllers/bancoDadosController')
 const PORT = process.env.PORT || 3000
 
-dataBase.connect()
+bancoDados.connect()
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
