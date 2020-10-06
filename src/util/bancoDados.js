@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const dataBaseName = 'caixa-virtual'
-const URI = 'mongodb://localhost/' + dataBaseName
+const URI = 'mongodb://caixavirtualadm:caixavirtual123@mongo_caixa-virtual:27017/' + dataBaseName
 const settings = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
