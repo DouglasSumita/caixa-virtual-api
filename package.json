@@ -2,10 +2,10 @@
   "name": "caixa-virtual-api",
   "version": "1.0.0",
   "description": "Caixa Virtual API",
-  "main": "src/server.js",
+  "main": "./src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "node ./src/server.js"
   },
   "repository": {
     "type": "git",
