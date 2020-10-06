@@ -6,16 +6,16 @@ Projeto desenvolvido em Javascript utilizando Node JS para execução e banco de
 Hospedado na Umbler.
 
 ## Objetivo: 
-Solução para gravar/listar movimentações de caixa.
+Solução para gravar/listar/excluir e atualizar movimentações do caixa virtual.
 
 ## Requisitos:
 * Noções básicas para utilizar Postman.
-* Endpoint: `http://caixa-virtual-api-com.umbler.net/`
+* Endpoint: http://caixa-virtual-api-com.umbler.net/
 
 <hr>
 
 ### Movimentações
-*Todos os métodos referente as movimentações é necessário enviar no cabeçalho da requisição um 'email' passado como conteúdo do Header "Authorization".
+* Todos os métodos referente as movimentações é necessário enviar no cabeçalho da requisição um 'email' passado como conteúdo do Header "Authorization".
 
 
 | Campo       | Tipo      | Obrigatório |
@@ -189,6 +189,7 @@ Solução para gravar/listar movimentações de caixa.
 
 ### PUT /movimentacao/:id
 * Necessário passar os campos a serem atualizados no corpo (Body) da requisição:
+* Não é permitido atualizar o valor da movimentação com valor menor ou igual a 0.
 ```
 {
     "valor": 1995.99
