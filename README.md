@@ -14,7 +14,8 @@ Solução para gravar/listar/excluir e atualizar movimentações do caixa virtua
 
 <hr>
 
-### Movimentações
+### Movimentações: 
+
 * Todos os métodos referente a Movimentação é necessário enviar no cabeçalho da requisição um 'email' passado como conteúdo do Header "Authorization", pois desta forma é processado informaçoes das movimentações somente para o email informado.
 
 
