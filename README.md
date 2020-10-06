@@ -3,17 +3,20 @@ Caixa Virtual - API
 </h1> 
 
 Projeto desenvolvido em Javascript utilizando Node JS para execução e banco de dados MongoDB.
+Hospedado na Umbler.
 
 ## Objetivo: 
 Solução para gravar/listar movimentações de caixa.
 
 ## Requisitos:
 * Noções básicas para utilizar Postman.
-* Endpoint: `http://servidorHospedado.net`
+* Endpoint: `http://caixa-virtual-api-com.umbler.net/`
 
 <hr>
 
 ### Movimentações
+*Todos os métodos referente as movimentações é necessário enviar no cabeçalho da requisição um 'email' passado como conteúdo do Header "Authorization".
+
 
 | Campo       | Tipo      | Obrigatório |
 |:-----------:|:---------:|:-----------:|
