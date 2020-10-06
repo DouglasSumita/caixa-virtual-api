@@ -45,7 +45,7 @@ async function novo(req, res) {
     
     try {
         novaCategoria = await modelCategoria(novaCategoria).save()
-        return res.status(201).send(new Catgoria(novaCategoria.name, novaCategoria._id))
+        return res.status(201).send(new Categoria(novaCategoria.name, novaCategoria._id))
     } catch(e) {
         return res.status(400).send(new Resposta(e.message))
     }
