@@ -1,9 +1,10 @@
 const app = require('express').Router()
 const movimentacaoController = require('../controllers/movimentacaoController')
+const Resposta = require('../entidades/Resposta')
 
 app.use((req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(400).send("'Authorization' não informado!")
+        return res.status(400).send(new Resposta("'Authorization' não informado!"))
     }
     next()
 })

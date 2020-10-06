@@ -3,17 +3,13 @@ const app = express()
 const bodyParser = require('body-parser')
 const categoria = require('./routes/categoria')
 const movimentacao = require('./routes/movimentacao')
-const bancoDados = require('./controllers/bancoDadosController')
+const bancoDados = require('./util/bancoDados')
 const PORT = process.env.PORT || 3000
+const cors = require('cors')
 
 bancoDados.connect()
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Methods', '*')
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next()
-})
+app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
