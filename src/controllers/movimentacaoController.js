@@ -10,6 +10,7 @@ const { getCategoriaById } = require('./categoriaController')
 const { getCategoria } = require('./categoriaController')
 const { getCategorias } = require('./categoriaController')
 const Resposta = require('../entidades/Resposta')
+const Logger = require('../util/Logger')
 
 async function getObjetoMovimentacao(obj) {
     try {
@@ -48,7 +49,7 @@ async function getMovimentacoes(email = "") {
             result.movimentacoes = movimentacoesAux
         }
     } catch (e) {
-        console.log(e)
+        Logger.log(e)
     } finally {
         return result
     }

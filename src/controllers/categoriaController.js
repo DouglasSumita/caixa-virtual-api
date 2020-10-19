@@ -5,13 +5,14 @@ require('../models/categoria')
 const modelCategoria = mongoose.model('Categoria')
 require('../entidades/Categoria')
 const { stringPreenchida } = require('../util/strings')
+const Logger = require('../util/Logger')
 
 async function getCategoriaById(id) {
     try {
         const categorias = await getCategorias()
         return getCategoria(id, categorias)
     } catch (e) {
-        console.log(e.message)
+        Logger.log(e.message)
     }
     return null
 }
@@ -52,6 +53,9 @@ async function novo(req, res) {
 }
 
 async function listagem(req, res) {
+
+    Logger.log(`Requisição: Buscar categorias.`)
+
     try {
         const categorias = await getCategorias()
         return res.status(200).send(categorias)
@@ -61,6 +65,9 @@ async function listagem(req, res) {
 }
 
 async function listagemById(req, res) {
+
+    Logger.log(`Requisição: Buscar categoria por Id: ${id}`)
+
     try {
         return res.status(200).send(await getCategoriaById(req.params.id))
     } catch(e) {
@@ -69,21 +76,31 @@ async function listagemById(req, res) {
 }
 
 async function exclui(req, res) {
+
+    let mensagem;
+    Logger.log(`Requisição: Deletar categoria por Id: ${req.params.id}`)
+    
     try {
         const categoria = await modelCategoria.findById(req.params.id).populate()
         if (!categoria) {
             return res.status(400).send(new Resposta(`Id: ${req.params.id} da Categoria não existe!`))
         }
-    
         await modelCategoria.findByIdAndDelete(req.params.id).lean()
-        res.status(200).send("Categoria deletada com sucesso!")
+        mensagem = `Deletado categoria Id: ${req.params.id} com sucesso!`
+        res.status(200).send(mensagem)
+
     } catch(e) {
+        mensagem = `Erro ao deletar categoria Id: ${req.params.id}`
         res.status(400).send(new Resposta(e.message))
+    } finally {
+        Logger.log(mensagem)
     }
 }
 
 async function atualiza(req, res) {
+
     const categoria = new Categoria(req.body.name, req.params.id)
+    Logger.log(`Requisição: Atualizar categoria por Id: ${id}`)
 
     try {
         const categoriaAtualizada = await modelCategoria.findByIdAndUpdate(categoria.getId(), categoria, {new: true}).populate()
