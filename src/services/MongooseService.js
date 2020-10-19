@@ -55,7 +55,7 @@ class MongooseService {
         this.setPromise()
         try {
             await mongoose.connect(this.URI, this.options)
-            return `Conectado ao banco de dados: ${dataBaseName}`
+            return `Conectado ao banco de dados: ${this.dataBaseName}`
         } catch(e) {
             return `Erro ao conectar ao banco de dados, erro: ${e.message}`
         }
