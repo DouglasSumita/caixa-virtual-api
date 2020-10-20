@@ -6,6 +6,7 @@ const modelCategoria = mongoose.model('Categoria')
 require('../entidades/Categoria')
 const { stringPreenchida } = require('../util/strings')
 const Logger = require('../util/Logger')
+const { StatusCodes } = require('http-status-codes')
 
 async function getCategoriaById(id) {
     try {
@@ -39,16 +40,16 @@ async function novo(req, res) {
     const listaCategoriaExistente = await modelCategoria.find({name: novaCategoria.getName()})
     
     if (!stringPreenchida(novaCategoria.getName())) {
-        return res.status(400).send(new Resposta("Categoria com nome inválido!")) 
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta("Categoria com nome inválido!")) 
     } else if (listaCategoriaExistente.length) {
-        return res.status(400).send(new Resposta(`Categoria já existe, Id: ${listaCategoriaExistente[0]._id}`)) 
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(`Categoria já existe, Id: ${listaCategoriaExistente[0]._id}`)) 
     } 
     
     try {
         novaCategoria = await modelCategoria(novaCategoria).save()
-        return res.status(201).send(new Categoria(novaCategoria.name, novaCategoria._id))
+        return res.status(StatusCodes.CREATED).send(new Categoria(novaCategoria.name, novaCategoria._id))
     } catch(e) {
-        return res.status(400).send(new Resposta(e.message))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
@@ -58,9 +59,9 @@ async function listagem(req, res) {
 
     try {
         const categorias = await getCategorias()
-        return res.status(200).send(categorias)
+        return res.status(StatusCodes.OK).send(categorias)
     } catch(e) {
-        return res.status(400).send(new Resposta(e.message))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
@@ -69,9 +70,9 @@ async function listagemById(req, res) {
     Logger.log(`Requisição: Buscar categoria por Id: ${id}`)
 
     try {
-        return res.status(200).send(await getCategoriaById(req.params.id))
+        return res.status(StatusCodes.OK).send(await getCategoriaById(req.params.id))
     } catch(e) {
-        return res.status(400).send(new Resposta(e.message))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
@@ -83,15 +84,15 @@ async function exclui(req, res) {
     try {
         const categoria = await modelCategoria.findById(req.params.id).populate()
         if (!categoria) {
-            return res.status(400).send(new Resposta(`Id: ${req.params.id} da Categoria não existe!`))
+            return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(`Id: ${req.params.id} da Categoria não existe!`))
         }
         await modelCategoria.findByIdAndDelete(req.params.id).lean()
         mensagem = `Deletado categoria Id: ${req.params.id} com sucesso!`
-        res.status(200).send(mensagem)
+        res.status(StatusCodes.OK).send(mensagem)
 
     } catch(e) {
         mensagem = `Erro ao deletar categoria Id: ${req.params.id}`
-        res.status(400).send(new Resposta(e.message))
+        res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     } finally {
         Logger.log(mensagem)
     }
@@ -104,9 +105,9 @@ async function atualiza(req, res) {
 
     try {
         const categoriaAtualizada = await modelCategoria.findByIdAndUpdate(categoria.getId(), categoria, {new: true}).populate()
-        res.status(200).send(new Categoria(categoriaAtualizada.name, categoriaAtualizada._id))
+        res.status(StatusCodes.OK).send(new Categoria(categoriaAtualizada.name, categoriaAtualizada._id))
     } catch(e) {
-        res.status(400).send(new Resposta(e.message))
+        res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 

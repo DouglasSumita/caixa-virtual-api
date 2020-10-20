@@ -11,6 +11,7 @@ const { getCategoria } = require('./categoriaController')
 const { getCategorias } = require('./categoriaController')
 const Resposta = require('../entidades/Resposta')
 const Logger = require('../util/Logger')
+const { StatusCodes } = require('http-status-codes')
 
 async function getObjetoMovimentacao(obj) {
     try {
@@ -85,39 +86,48 @@ async function novo(req, res) {
     const objMovimentacao = new Movimentacao(req.body.descricao, req.body.valor, req.body.tipo, req.body.categoria, req.body.id, req.headers.authorization)
     const erros = await getErrosNovaMovimentacao(objMovimentacao)
     if (erros.length) {
-        return res.status(400).send(new Resposta(erros.join(',\n')))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(erros.join(',\n')))
     }
 
     try {
         const novaMovimentacao = await modelMovimentacao(objMovimentacao).save()
-        return res.status(201).send(await getObjetoMovimentacao(novaMovimentacao))
+        return res.status(StatusCodes.CREATED).send(await getObjetoMovimentacao(novaMovimentacao))
     } catch (e) {
-        return res.status(400).send(new Resposta(e.message))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
 async function listagem(req, res) {
+    
+    Logger.log(`Requisição: Buscar movimentações.`)
+
     try {
         const movimentacoes = await getMovimentacoes(req.headers.authorization)
-        return res.status(200).send(movimentacoes)
+        return res.status(StatusCodes.OK).send(movimentacoes)
     } catch (e) {
-        return res.status(400).send(new Resposta(e.message))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
 async function listagemById(req, res) {
+
+    Logger.log(`Requisição: Buscar movimentação por Id: ${req.params.id}`)
+    
     try {
         const movimentacao = await modelMovimentacao.find({
             _id: req.params.id,
             email: req.headers.authorization
         }).populate()
-        return res.status(200).send(await getObjetoMovimentacao(movimentacao[0]))
+        return res.status(StatusCodes.OK).send(await getObjetoMovimentacao(movimentacao[0]))
     } catch (e) {
-        return res.status(400).send(new Resposta(e.message))
+        return res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
 async function exclui(req, res) {
+
+    Logger.log(`Requisição: Deletar movimentação por Id: ${req.params.id}`)
+
     try {
         const movimentacao = await modelMovimentacao.find({
             _id: req.params.id,
@@ -125,18 +135,21 @@ async function exclui(req, res) {
         }).populate()
          
         if (!movimentacao.length) {
-            return res.status(400).send(new Resposta("Movimentação não encontrada!"))
+            return res.status(StatusCodes.BAD_REQUEST).send(new Resposta("Movimentação não encontrada!"))
         }
         await modelMovimentacao.findByIdAndDelete(req.params.id).lean()
-        res.status(200).send(new Resposta("Movimentação deletada com sucesso!"))
+        res.status(StatusCodes.OK).send(new Resposta("Movimentação deletada com sucesso!"))
     } catch (e) {
-        res.status(400).send(new Resposta(e.message))
+        res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
 async function atualiza(req, res) {
+
+    Logger.log(`Requisição: Atualizar movimentação por Id: ${req.params.id}`)
+
     if (!req.body.valor || req.body.valor < 0) {
-        res.status(400).send(new Resposta(`Valor inválido: ${req.body.valor}`))
+        res.status(StatusCodes.BAD_REQUEST).send(new Resposta(`Valor inválido: ${req.body.valor}`))
     }
     try {
         const movimentacaAtualizada = await modelMovimentacao.findOneAndUpdate({
@@ -146,9 +159,9 @@ async function atualiza(req, res) {
             new: true
         }).lean()
         
-        res.status(200).send(await getObjetoMovimentacao(movimentacaAtualizada))
+        res.status(StatusCodes.OK).send(await getObjetoMovimentacao(movimentacaAtualizada))
     } catch (e) {
-        res.status(400).send(new Resposta(e.message))
+        res.status(StatusCodes.BAD_REQUEST).send(new Resposta(e.message))
     }
 }
 
